@@ -1,5 +1,8 @@
 const express = require("express");
 const Collection=require("./mongoose.js")
+const { BlogPost } = require("./mongoose.js");
+
+
 
 
 const path = require("path");
@@ -29,34 +32,36 @@ app.get("/", (req, res) => {
 });
 
 
-app.post("/",async (req,res)=> {
-    try{
-        const check=await Collection.findOne({name:req.body.name})
+app.post("/", async (req, res) => {
+  try {
+    const check = await Collection.findOne({ name: req.body.name });
 
-        if(check){
-            res.send("user already exist")
-        }
-        else{
-
-            const token=JsonWebTokenError.sign({name:req.body.name},"eddededededeknkrgnigigtitnirgnitgitnitgtijhhguh")
-            const data={
-                name:req.body.name,
-                password:req.body.password,
-                token:token
-            }
-            await Collection.insertMany([data])
-        }
-
-
+    if (check) {
+      return res.send("user already exists");
     }
-    catch{
-        res.send("wrong details")
-    }
-    
-})
 
+    // Generate token
+    const token = jwt.sign(
+      { name: req.body.name, email: req.body.email },
+      "yourSecretKey"
+    );
 
+    // Insert new user with email included
+    const data = {
+      name: req.body.name,
+      password: req.body.password,
+      email: req.body.email,
+      token: token
+    };
 
+    await Collection.insertMany([data]);
+
+    res.send("User registered successfully");
+  } catch (err) {
+    console.error("Error inserting data:", err);  // Now you'll see the actual issue
+    res.status(500).send("Internal server error: " + err.message);
+  }
+});
 
 
 app.listen(3000, () => {
