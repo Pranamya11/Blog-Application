@@ -9,3 +9,17 @@ registerLink.onclick = () => {
 loginLink.onclick = () => {
     wrapper.classList.remove('active')
 }
+
+
+
+const signInButton = document.getElementById("SIGN-IN");
+if (signInButton) {
+    signInButton.addEventListener("click", function() {
+        const POST = 5500;
+        window.location.href = `http://localhost:${POST}`;
+    });
+}
+else{
+    alert("SIGN UP FIRST")
+}
+

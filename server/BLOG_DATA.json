@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "title": "Welcome to the Blog",
+    "content": "This is your first blog post!",
+    "author": "Admin",
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]

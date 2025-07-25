@@ -34,3 +34,5 @@ const Schema=new mongoose.Schema({
 const Collection=new mongoose.model("authcollections",Schema)
 
 module.exports=Collection
+
+
