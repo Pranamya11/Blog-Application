@@ -1,27 +1,28 @@
 const express = require("express");
-const Collection = require("./mongoose.js");
-const fs = require("fs");
+const { Collection, Blog } = require("./mongoose.js");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const bcryptjs = require("bcryptjs");
 
-const blogs = require("./BLOG_DATA.json");
-const data = require("./application.json");
+const blogData = require("./BLOG_DATA.json");
+
 
 const app = express();
 
-// Middleware
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:5173', // Your React app's origin
+  credentials: true
+}));
 
 
-app.set('views', path.join(__dirname, '../views'));
-app.set('view engine', 'ejs');
 
-// Utility functions
 async function hashpass(password) {
   return await bcryptjs.hash(password, 10);
 }
@@ -31,30 +32,26 @@ async function compare(userPass, hashedPassword) {
 }
 
 
-
-// Routes
 app.get("/sign-up", (req, res) => {
   try {
     if (req.cookies.jwt) {
       const verify = jwt.verify(req.cookies.jwt, "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd");
-
-      return res.render("home", { name: verify.name }); // Added return here
+      return res.redirect('http://localhost:5173/');
     }
-    return res.render("sign"); // Added return here
-    // Removed the res.send() that was causing multiple responses
+    return res.redirect('http://localhost:5173/signup');
   } catch (error) {
     console.error("Root route error:", error);
-    return res.status(500).render("error"); // Make sure you have an error view
+    return res.redirect('http://localhost:5173/');
   }
 });
 
-// Signup Route
+// Signup Route////////
 app.post("/sign-up", async (req, res) => {
   try {
     console.log("Received signup request:", req.body);
 
     // Check if user exists
-    const existingUser = await Collection.findOne({ 
+    const existingUser = await Collection.findOne({
       $or: [
         { name: req.body.name },
         { email: req.body.email }
@@ -62,23 +59,21 @@ app.post("/sign-up", async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(409).render("sign", { 
-        error: "User with this name or email already exists",
-        formData: req.body // Pass back the form data to repopulate the form
+      return res.status(409).json({
+        error: "User with this name or email already exists"
       });
     }
 
-    // Hash password
     const hashedPassword = await hashpass(req.body.password);
 
-    // Create token
+    
     const token = jwt.sign(
       { name: req.body.name, email: req.body.email },
-      "nnvbihohbjvjvjbj",
+      "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd",
       { expiresIn: '1h' }
     );
 
-    // Create new user
+  
     const newUser = new Collection({
       name: req.body.name,
       email: req.body.email,
@@ -86,177 +81,187 @@ app.post("/sign-up", async (req, res) => {
       token: token
     });
 
-    // Save user
+   
     await newUser.save();
 
-    // Set cookie
+ 
     res.cookie("jwt", token, {
       maxAge: 3600000, // 1 hour
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production'
     });
 
-    // Send single response
-    return res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      user: {
-        name: newUser.name,
-        email: newUser.email
-      }
-    });
-
-    return res.redirect("/");
+    
+    return res.redirect('http://localhost:5173/');
 
   } catch (error) {
     console.error("Signup error:", error);
     if (!res.headersSent) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         success: false,
-        message: "Internal server error" 
+        message: "Internal server error"
       });
     }
   }
 });
 
-// Start server
-
-
-
-
-///login//////
-
 app.get("/login", (req, res) => {
   try {
     if (req.cookies.jwt) {
-      // If already logged in, redirect to home
-      const verify = jwt.verify(req.cookies.jwt, "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd");
-      return res.render("home", { name: verify.name });
+      return res.redirect('http://localhost:5173/');
     }
-    return res.render("login");
+    res.redirect('http://localhost:5173/login');
   } catch (error) {
     console.error("Login page error:", error);
-    return res.status(500).render("error");
+    return res.redirect('http://localhost:5173/login');
   }
 });
 
-
-
 app.post("/login", async (req, res) => {
   try {
-    // Input validation
     if (!req.body.name || !req.body.password) {
-      return res.status(400).render("login", { error: "Username and password are required" });
+      return res.status(400).json({ error: "Username and password are required" });
     }
 
-    // Find user
     const user = await Collection.findOne({ name: req.body.name });
     if (!user) {
-      return res.status(401).render("login", { error: "Invalid credentials" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Compare passwords
     const isMatch = await compare(req.body.password, user.password);
     if (!isMatch) {
-      return res.status(401).render("login", { error: "Invalid credentials" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate NEW token (don't reuse old one)
     const token = jwt.sign(
       { name: user.name, email: user.email },
-      "nnvbihohbjvjvjbj",
+      "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd",
       { expiresIn: '1h' }
     );
 
-    // Update token in database
     user.token = token;
     await user.save();
 
-    // Set cookie
     res.cookie("jwt", token, {
       maxAge: 3600000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production'
     });
 
-    // Redirect or render home
-    return res.render("home", { name: user.name });
+    return res.redirect('http://localhost:5173/');
 
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).render("login", { error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
+app.get('/api/check-auth', (req, res) => {
+  try {
+    if (!req.cookies.jwt) {
+      return res.status(401).json({ isAuthenticated: false });
+    }
+    const verify = jwt.verify(req.cookies.jwt, "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd");
+    res.json({ isAuthenticated: true, user: { name: verify.name, email: verify.email } });
+  } catch (error) {
+    res.status(401).json({ isAuthenticated: false });
+  }
+});
 
-////// FOR BLOG //
+// Blog endpoints - Now using MongoDB
+app.get("/api/blogs", async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ created_at: -1 });
+    return res.json(blogs);
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    return res.status(500).json({ status: "error", message: "Failed to fetch blogs" });
+  }
+});
 
-// app.get("/api/blogs", (req, res) => {
-//   return res.json(blogs);
-// });
+app.get("/api/blogs/:id", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ status: "error", message: "Blog not found" });
+    res.json(blog);
+  } catch (error) {
+    console.error("Error fetching blog:", error);
+    return res.status(500).json({ status: "error", message: "Failed to fetch blog" });
+  }
+});
 
-// app.get("/api/blogs/:id", (req, res) => {
-//   const id = Number(req.params.id);
-//   const blog = blogs.find((b) => b.id === id);
-//   if (!blog) return res.status(404).json({ status: "error", message:` Blog not found ${error}` });
-//   res.json(blog);
-// });
+app.post("/api/blogs/insert", async (req, res) => {
+  try {
+    const { title, content, author } = req.body;
+    
+    if (!title || !content || !author) {
+      
+      return res.status(400).json({ status: "error", message: "Missing fields" });
+    }
 
-// app.post("/api/blogs/insert", (req, res) => {
-//   const { title, content, author } = req.body;
-//   if (!title || !content || !author) {
-//     return res.status(400).json({ status: "error", message: "Missing fields" });
-//   }
+    const newBlog = new Blog({
+      title,
+      content,
+      author,
+      created_at: new Date()
+    });
 
-//   const newUser = {
-//     id: blogs.length + 1,
-//     title,
-//     content,
-//     author,
-//     created_at: new Date().toISOString()
-//   };
+    await newBlog.save();
+    res.json({ status: "success", blog: newBlog });
+  } catch (error) {
+    console.error("Error creating blog:", error);
+    return res.status(500).json({ status: "error", message: "Failed to create blog" });
+  }
+});
 
-//   blogs.push(newBlog);
-//   fs.writeFile("./BLOG_DATA.json", JSON.stringify(blogs, null, 2), (err) => {
-//     if (err) return res.status(500).json({ status: "error", message: "Failed to write blog" });
-//     res.json({ status: "success", blog: newBlog });
-//   });
-// });
+app.patch("/api/blogs/:id", async (req, res) => {
+  try {
+    const { title, content, author } = req.body;
+    const blog = await Blog.findById(req.params.id);
 
-// app.patch("/api/blogs/:id", (req, res) => {
-//   const id = Number(req.params.id);
-//   const { title, content, author } = req.body;
-//   const blogIndex = blogs.findIndex(b => b.id === id);
+    if (!blog) {
+      return res.status(404).json({ status: "error", message: "Blog not found" });
+    }
 
-//   if (blogIndex === -1) return res.status(404).json({ status: "error", message: "Blog not found" });
+    if (title) blog.title = title;
+    if (content) blog.content = content;
+    if (author) blog.author = author;
 
-//   if (title) blogs[blogIndex].title = title;
-//   if (content) blogs[blogIndex].content = content;
-//   if (author) blogs[blogIndex].author = author;
+    await blog.save();
+    res.json({ status: "success", blog: blog });
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    return res.status(500).json({ status: "error", message: "Failed to update blog" });
+  }
+});
 
-//   fs.writeFile("./BLOG_DATA.json", JSON.stringify(blogs, null, 2), (err) => {
-//     if (err) return res.status(500).json({ status: "error", message: "Failed to update blog" });
-//     res.json({ status: "success", blog: blogs[blogIndex] });
-//   });
-// });
+app.delete("/api/blogs/:id", async (req, res) => {
+  try {
+    const blog = await Blog.findByIdAndDelete(req.params.id);
+    
+    if (!blog) {
+      return res.status(404).json({ status: "error", message: "Blog not found" });
+    }
 
+    res.json({ status: "success", message: `Blog deleted successfully` });
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    return res.status(500).json({ status: "error", message: "Failed to delete blog" });
+  }
+});
 
-// app.delete("/api/blogs/:id", (req, res) => {
-//   const id = Number(req.params.id);
-//   const newBlogs = blogs.filter(b => b.id !== id);
+app.post('/logout', (req, res) => {
+  res.clearCookie('jwt');
+  res.json({ success: true });
+});
 
-//   if (newBlogs.length === blogs.length)
-//     return res.status(404).json({ status: "error", message: "Blog not found" });
-
-//   fs.writeFile("./BLOG_DATA.json", JSON.stringify(newBlogs, null, 2), (err) => {
-//     if (err) return res.status(500).json({ status: "error", message: "Failed to delete blog" });
-//     res.json({ status: "success", message:` Blog with id ${id} deleted `});
-//   });
-// });
-
+app.get('/logout', (req, res) => {
+  res.clearCookie('jwt');
+  res.json({ success: true });
+});
 
 app.listen(3000, () => {
-  const Port = 3000
+  const Port = 3000;
   console.log(`port connected ${Port}`);
 });
 

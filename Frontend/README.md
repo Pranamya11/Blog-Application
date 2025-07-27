@@ -1,12 +1,78 @@
-# React + Vite
+# Blog Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React blog application with the following features:
 
-Currently, two official plugins are available:
+- View all blog posts
+- Create new blog posts
+- Read individual blog posts
+- Edit existing blog posts
+- Delete blog posts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Responsive Design**: Works on desktop and mobile devices
+- **Modern UI**: Clean and intuitive user interface
+- **Real-time Updates**: Immediate feedback on user actions
+- **Error Handling**: Proper error messages and loading states
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+
+### Prerequisites
+
+- Node.js (version 16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start the development server:
+```bash
+npm run dev
+```
+
+3. Open your browser and navigate to `http://localhost:5173`
+
+### Building for Production
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── header.jsx          # Navigation header
+│   ├── blogList.jsx        # List of all blog posts
+│   ├── BlogPost.jsx        # Individual blog post view
+│   └── CreatePost.jsx      # Create new post form
+├── api.js                  # API service functions
+├── App.jsx                 # Main app component
+├── App.css                 # Main styles
+└── main.jsx               # App entry point
+```
+
+## API Endpoints
+
+The frontend connects to a backend API at `http://localhost:3000/api`:
+
+- `GET /api/posts` - Get all posts
+- `GET /api/posts/:id` - Get a specific post
+- `POST /api/posts` - Create a new post
+- `PUT /api/posts/:id` - Update a post
+- `DELETE /api/posts/:id` - Delete a post
+
+## Technologies Used
+
+- React 19
+- React Router DOM
+- Axios for API calls
+- Vite for build tooling
+- CSS for styling
