@@ -43,7 +43,7 @@ const Signup = () => {
         // Redirect to home page after successful signup
         setTimeout(() => {
           navigate('/');
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       setError(error.response?.data?.message || 'Signup failed. Please try again.');

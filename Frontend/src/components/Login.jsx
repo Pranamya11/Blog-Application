@@ -42,7 +42,7 @@ const Login = () => {
         // Redirect to home page after successful login
         setTimeout(() => {
           navigate('/');
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       setError(error.response?.data?.error || 'Login failed. Please try again.');

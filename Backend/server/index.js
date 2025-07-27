@@ -92,7 +92,12 @@ app.post("/sign-up", async (req, res) => {
     });
 
     
-    return res.redirect('http://localhost:5173/');
+    // Return JSON response instead of redirect for frontend
+    return res.status(201).json({ 
+      success: true, 
+      message: "Account created successfully",
+      user: { name: req.body.name, email: req.body.email }
+    });
 
   } catch (error) {
     console.error("Signup error:", error);
@@ -148,7 +153,12 @@ app.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === 'production'
     });
 
-    return res.redirect('http://localhost:5173/');
+    // Return JSON response instead of redirect for frontend
+    return res.status(200).json({ 
+      success: true, 
+      message: "Login successful",
+      user: { name: user.name, email: user.email }
+    });
 
   } catch (error) {
     console.error("Login error:", error);
