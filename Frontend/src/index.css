@@ -159,15 +159,13 @@ button:focus-visible {
   font-size: 3rem;
   font-weight: 800;
   margin: 2rem 0;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* Home Page Specific Styles */
 .home-page {
   min-height: 100vh;
+  position: relative;
+  z-index: 10;
 }
 
 /* Blog List Styles */

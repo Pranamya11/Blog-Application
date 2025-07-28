@@ -13,6 +13,7 @@ import Signup from './components/Signup';
 import MyBlog from './components/MyBlog';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import Welcome from './components/Welcome';
 import './App.css';
 
 function App() {
@@ -21,28 +22,85 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="App">
-            <Header />
-            <main className="container">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/posts" element={<BlogList />} />
-                <Route path="/my-blog" element={<MyBlog />} />
-                <Route path="/post/:id" element={<BlogPost />} />
-                <Route path="/create" element={
-                  <ProtectedRoute>
-                    <CreatePost />
-                  </ProtectedRoute>
-                } />
-                <Route path="/edit-post/:id" element={
-                  <ProtectedRoute>
-                    <EditPost />
-                  </ProtectedRoute>
-                } />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-              </Routes>
-            </main>
-            <Footer />
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/home" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <HomePage />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/posts" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <BlogList />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/my-blog" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <MyBlog />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/post/:id" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <BlogPost />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/create" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <ProtectedRoute>
+                      <CreatePost />
+                    </ProtectedRoute>
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/edit-post/:id" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <ProtectedRoute>
+                      <EditPost />
+                    </ProtectedRoute>
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/login" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <Login />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/signup" element={
+                <>
+                  <Header />
+                  <main className="container">
+                    <Signup />
+                  </main>
+                  <Footer />
+                </>
+              } />
+            </Routes>
           </div>
         </Router>
       </AuthProvider>
