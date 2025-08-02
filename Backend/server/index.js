@@ -260,13 +260,55 @@ app.delete("/api/blogs/:id", async (req, res) => {
   }
 });
 
-app.post('/logout', (req, res) => {
-  res.clearCookie('jwt');
+app.post('/api/logout', (req, res) => {
+  // Clear cookie with multiple attempts to ensure it's removed
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production'
+  });
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production',
+    path: '/'
+  });
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: false,
+    path: '/'
+  });
+  // Also clear with domain and other variations
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: false,
+    path: '/',
+    domain: 'localhost'
+  });
   res.json({ success: true });
 });
 
-app.get('/logout', (req, res) => {
-  res.clearCookie('jwt');
+app.get('/api/logout', (req, res) => {
+  // Clear cookie with multiple attempts to ensure it's removed
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production'
+  });
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production',
+    path: '/'
+  });
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: false,
+    path: '/'
+  });
+  // Also clear with domain and other variations
+  res.clearCookie('jwt', { 
+    httpOnly: true, 
+    secure: false,
+    path: '/',
+    domain: 'localhost'
+  });
   res.json({ success: true });
 });
 

@@ -5,7 +5,11 @@ import TextType from './TextType';
 import SplitText from './SplitText';
 import ShinyText from './ShinyText';
 import BlurText from './BlurText';
+import { animate } from 'framer-motion';
 
+const handleAnimationComplete = () => {
+  console.log('Animation completed!');
+};
 
 
 const Header = () => {
@@ -46,7 +50,7 @@ const Header = () => {
       }}>
         {/* Main Title */}
         <div className="logo-center">
-          <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
+          <Link to="/home" className="logo" style={{ textDecoration: 'none' }}>
             <div className="welcome-text">
               <div style={{
                 background: 'linear-gradient(90deg, #4A90E2 0%, #9B59B6 50%, #E74C3C 100%)',
@@ -79,17 +83,20 @@ const Header = () => {
                     backgroundClip: 'text',
                     fontSize: '5rem',
                     fontWeight: 'bold',
-                    margin: '0',
-                    textAlign: 'center'
+                    margin: '1',
+                    textAlign: 'centre',
+                    
+                    
 
                   }}>
-                  Here You Can Write or Read Blogs
+                  Here You Can Read And Write Blogs
                 </h1>
               </div>
             </div>
         </div>
       </Link>
     </div>
+
 
         {/* Navigation Links */ }
   <nav className="nav-links" style={{
@@ -99,7 +106,7 @@ const Header = () => {
     gap: '2rem',
     marginBottom: '2rem'
   }}>
-    <Link to="/" className="nav-link" style={{
+    <Link to="/home" className="nav-link" style={{
       color: '#ffffff',
       textDecoration: 'none',
       fontWeight: '600',
@@ -109,6 +116,7 @@ const Header = () => {
     }}>
       HOME
     </Link>
+    
     <Link to="/my-blog" className="nav-link" style={{
       color: '#ffffff',
       textDecoration: 'none',

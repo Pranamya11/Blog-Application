@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { checkAuth, logout } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -14,6 +15,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkAuthentication();
@@ -24,9 +26,12 @@ export const AuthProvider = ({ children }) => {
       const authData = await checkAuth();
       if (authData.isAuthenticated) {
         setUser(authData.user);
+      } else {
+        setUser(null);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -40,13 +45,19 @@ export const AuthProvider = ({ children }) => {
       // Call logout API
       await logout();
       
-      // Redirect to login page after logout
-      window.location.href = '/login';
+      // Force a complete logout by clearing any cached auth state
+      setLoading(true);
+      await checkAuthentication();
+      setLoading(false);
+      
+      // Navigate to login page using React Router
+      navigate('/login', { replace: true });
     } catch (error) {
       console.error('Logout failed:', error);
-      // Still redirect even if logout API fails
+      // Still clear user and redirect even if logout API fails
       setUser(null);
-      window.location.href = '/login';
+      setLoading(false);
+      navigate('/login', { replace: true });
     }
   };
 
@@ -57,6 +68,8 @@ export const AuthProvider = ({ children }) => {
     logout: handleLogout,
     checkAuth: checkAuthentication
   };
+
+
 
   return (
     <AuthContext.Provider value={value}>

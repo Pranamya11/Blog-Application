@@ -31,13 +31,16 @@ export const getPostById = async (id) => {
   }
 };
 
+
+// constants.js
+export const DEFAULT_USERNAME = 'Anonymous';
 // Create a new post
 export const createPost = async (postData, userName) => {
   try {
     const response = await api.post('/blogs/insert', {
       title: postData.title,
       content: postData.content,
-      author: userName || 'Anonymous'
+      author: userName || DEFAULT_USERNAME
     });
     return response.data;
   } catch (error) {
@@ -50,8 +53,8 @@ export const updatePost = async (id, postData) => {
   try {
     const response = await api.patch(`/blogs/${id}`, {
       title: postData.title,
-      content: postData.content,
-      author: postData.author || 'Anonymous'
+      content: postData.content
+      // Don't update the author field - preserve the original author
     });
     return response.data;
   } catch (error) {
@@ -83,9 +86,7 @@ export const checkAuth = async () => {
 // Logout function
 export const logout = async () => {
   try {
-    const response = await axios.post('http://localhost:3000/logout', {}, {
-      withCredentials: true
-    });
+    const response = await api.post('/api/logout', {});
     return response.data;
   } catch (error) {
     throw new Error('Failed to logout');

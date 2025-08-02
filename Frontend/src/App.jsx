@@ -1,8 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Header from './components/header.jsx';
-import Footer from './components/Footer';
+import PageLayout from './components/PageLayout';
 import HomePage from './components/HomePage';
 import BlogList from './components/blogList.jsx';
 import BlogPost from './components/BlogPost';
@@ -19,91 +18,24 @@ import './App.css';
 function App() {
   return (
     <ErrorBoundary>
+      <Router>
       <AuthProvider>
-        <Router>
           <div className="App">
             <Routes>
               <Route path="/" element={<Welcome />} />
-              <Route path="/home" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <HomePage />
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/posts" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <BlogList />
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/my-blog" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <MyBlog />
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/post/:id" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <BlogPost />
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/create" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <ProtectedRoute>
-                      <CreatePost />
-                    </ProtectedRoute>
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/edit-post/:id" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <ProtectedRoute>
-                      <EditPost />
-                    </ProtectedRoute>
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/login" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <Login />
-                  </main>
-                  <Footer />
-                </>
-              } />
-              <Route path="/signup" element={
-                <>
-                  <Header />
-                  <main className="container">
-                    <Signup />
-                  </main>
-                  <Footer />
-                </>
-              } />
+              <Route path="/home" element={<PageLayout><HomePage /></PageLayout>} />
+              <Route path="/posts" element={<PageLayout><BlogList /></PageLayout>} />
+              <Route path="/my-blog" element={<PageLayout><MyBlog /></PageLayout>} />
+              <Route path="/post/:id" element={<PageLayout><BlogPost /></PageLayout>} />
+              <Route path="/create" element={<PageLayout><ProtectedRoute><CreatePost /></ProtectedRoute></PageLayout>} />
+              <Route path="/edit-post/:id" element={<PageLayout><ProtectedRoute><EditPost /></ProtectedRoute></PageLayout>} />
+              <Route path="/login" element={<PageLayout><Login /></PageLayout>} />
+              <Route path="/signup" element={<PageLayout><Signup /></PageLayout>} />
+              <Route path="*" element={<Welcome />} />
             </Routes>
           </div>
+        </AuthProvider>
         </Router>
-      </AuthProvider>
     </ErrorBoundary>
   );
 }

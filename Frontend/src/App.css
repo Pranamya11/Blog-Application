@@ -496,43 +496,47 @@ nav {
 }
 
 .post-card.fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1000;
-  border-radius: 0;
-  margin: 0;
-  padding: var(--spacing-2xl);
-  background: var(--background);
-  box-shadow: none;
-  border: none;
-  transform: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1000 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: var(--spacing-2xl) !important;
+  background: var(--background) !important;
+  box-shadow: none !important;
+  border: none !important;
+  transform: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  overflow: hidden !important;
 }
 
 .post-card.fullscreen h3 {
-  font-size: 3rem;
-  margin-bottom: var(--spacing-xl);
+  font-size: 3rem !important;
+  margin-bottom: var(--spacing-xl) !important;
+  text-align: center !important;
 }
 
 .post-card.fullscreen .post-excerpt {
-  font-size: 1.5rem;
-  line-height: 1.8;
-  max-width: 800px;
-  margin: 0 auto var(--spacing-xl);
+  font-size: 1.5rem !important;
+  line-height: 1.8 !important;
+  max-width: 800px !important;
+  margin: 0 auto var(--spacing-xl) !important;
+  text-align: center !important;
 }
 
 .post-card.fullscreen .post-meta {
-  font-size: 1.2rem;
-  margin-top: var(--spacing-lg);
+  font-size: 1.2rem !important;
+  margin-top: var(--spacing-lg) !important;
+  text-align: center !important;
 }
 
 .post-card.fullscreen::before {
