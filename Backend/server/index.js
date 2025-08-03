@@ -312,8 +312,10 @@ app.get('/api/logout', (req, res) => {
   res.json({ success: true });
 });
 
-app.listen(3000, () => {
-  const Port = 3000;
-  console.log(`port connected ${Port}`);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
+
 
