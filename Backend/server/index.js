@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const { Collection, Blog } = require("./mongoose.js");
 const path = require("path");
@@ -17,14 +18,14 @@ app.use(express.urlencoded({ extended: false }));
 
 const cors = require('cors');
 app.use(cors({
-  origin: 'http://localhost:5173', // Your React app's origin
-  credentials: true
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: process.env.CORS_CREDENTIALS === 'true'
 }));
 
 
 
 async function hashpass(password) {
-  return await bcryptjs.hash(password, 10);
+  return await bcryptjs.hash(password, parseInt(process.env.BCRYPT_ROUNDS) || 12);
 }
 
 async function compare(userPass, hashedPassword) {
@@ -35,13 +36,13 @@ async function compare(userPass, hashedPassword) {
 app.get("/sign-up", (req, res) => {
   try {
     if (req.cookies.jwt) {
-      const verify = jwt.verify(req.cookies.jwt, "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd");
-      return res.redirect('http://localhost:5173/');
+      const verify = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+      return res.redirect(process.env.CORS_ORIGIN + '/');
     }
-    return res.redirect('http://localhost:5173/signup');
+    return res.redirect(process.env.CORS_ORIGIN + '/signup');
   } catch (error) {
     console.error("Root route error:", error);
-    return res.redirect('http://localhost:5173/');
+    return res.redirect(process.env.CORS_ORIGIN + '/');
   }
 });
 
@@ -69,8 +70,8 @@ app.post("/sign-up", async (req, res) => {
     
     const token = jwt.sign(
       { name: req.body.name, email: req.body.email },
-      "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd",
-      { expiresIn: '1h' }
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
   
@@ -86,7 +87,7 @@ app.post("/sign-up", async (req, res) => {
 
  
     res.cookie("jwt", token, {
-      maxAge: 3600000, // 1 hour
+      maxAge: parseInt(process.env.SESSION_COOKIE_MAX_AGE) || 24 * 60 * 60 * 1000, // 24 hours default
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production'
     });
@@ -113,12 +114,12 @@ app.post("/sign-up", async (req, res) => {
 app.get("/login", (req, res) => {
   try {
     if (req.cookies.jwt) {
-      return res.redirect('http://localhost:5173/');
+      return res.redirect(process.env.CORS_ORIGIN + '/');
     }
-    res.redirect('http://localhost:5173/login');
+    res.redirect(process.env.CORS_ORIGIN + '/login');
   } catch (error) {
     console.error("Login page error:", error);
-    return res.redirect('http://localhost:5173/login');
+    return res.redirect(process.env.CORS_ORIGIN + '/login');
   }
 });
 
@@ -140,15 +141,15 @@ app.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       { name: user.name, email: user.email },
-      "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd",
-      { expiresIn: '1h' }
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
     user.token = token;
     await user.save();
 
     res.cookie("jwt", token, {
-      maxAge: 3600000,
+      maxAge: parseInt(process.env.SESSION_COOKIE_MAX_AGE) || 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production'
     });
@@ -171,7 +172,7 @@ app.get('/api/check-auth', (req, res) => {
     if (!req.cookies.jwt) {
       return res.status(401).json({ isAuthenticated: false });
     }
-    const verify = jwt.verify(req.cookies.jwt, "fygxfxggugghbjbjvnknknknknknknknknknknknknknhvycfzzd");
+    const verify = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
     res.json({ isAuthenticated: true, user: { name: verify.name, email: verify.email } });
   } catch (error) {
     res.status(401).json({ isAuthenticated: false });
@@ -191,6 +192,9 @@ app.get("/api/blogs", async (req, res) => {
 
 app.get("/api/blogs/:id", async (req, res) => {
   try {
+    console.log("Received request for blog ID:", req.params.id);
+    console.log("ID type:", typeof req.params.id);
+    
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ status: "error", message: "Blog not found" });
     res.json(blog);
@@ -226,6 +230,7 @@ app.post("/api/blogs/insert", async (req, res) => {
 
 app.patch("/api/blogs/:id", async (req, res) => {
   try {
+    console.log("Received PATCH request for blog ID:", req.params.id);
     const { title, content, author } = req.body;
     const blog = await Blog.findById(req.params.id);
 
@@ -247,6 +252,7 @@ app.patch("/api/blogs/:id", async (req, res) => {
 
 app.delete("/api/blogs/:id", async (req, res) => {
   try {
+    console.log("Received DELETE request for blog ID:", req.params.id);
     const blog = await Blog.findByIdAndDelete(req.params.id);
     
     if (!blog) {
