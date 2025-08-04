@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ debug: true });
 const express = require("express");
 const { Collection, Blog } = require("./mongoose.js");
 const path = require("path");
@@ -19,10 +19,19 @@ app.use(express.urlencoded({ extended: false }));
 const cors = require('cors');
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  credentials: process.env.CORS_CREDENTIALS === 'true'
+  credentials: process.env.CORS_CREDENTIALS === 'true',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
-
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
 async function hashpass(password) {
   return await bcryptjs.hash(password, parseInt(process.env.BCRYPT_ROUNDS) || 12);
@@ -319,9 +328,11 @@ app.get('/api/logout', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 

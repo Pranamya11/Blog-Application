@@ -1,12 +1,17 @@
 const mongoose=require("mongoose")
 
-mongoose.connect(process.env.DB_URI || "mongodb://localhost:27017/blog_db")
-.then(()=>{
-    console.log("mongo connected")
+// Use MongoDB Atlas or other cloud database for production
+const mongoURI = process.env.MONGODB_URI || process.env.DB_URI || "mongodb://localhost:27017/blog_db";
 
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 })
-.catch(()=>{
-    console.log("error")
+.then(()=>{
+    console.log("✅ MongoDB connected successfully")
+})
+.catch((error)=>{
+    console.error("❌ MongoDB connection error:", error.message)
 })
 
 // User Schema
