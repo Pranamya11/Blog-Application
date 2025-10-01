@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "concurrently": "^9.2.0",
+    "dotenv": "^17.2.2",
     "y": "^0.3.2"
   },
   "name": "project-003",
@@ -12,7 +13,6 @@
     "frontend": "cd Frontend && npm run dev",
     "backend": "cd Backend && npm start",
     "dev": "concurrently -n \"frontend,backend\" -c \"bgBlue,bgYellow\" \"npm run frontend\" \"npm run backend\""
-    
   },
   "repository": {
     "type": "git",
