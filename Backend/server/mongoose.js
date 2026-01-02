@@ -1,7 +1,11 @@
 const mongoose=require("mongoose")
 
 // Use MongoDB Atlas or other cloud database for production
+<<<<<<< HEAD
 const mongoURI = process.env.DB_URI ;
+=======
+const mongoURI = process.env.MONGODB_URI || process.env.DB_URI || "mongodb://localhost:27017/AUTH";
+>>>>>>> 420924820a5569328c0cace91b80be005630dac2
 
 mongoose.connect(mongoURI, {
     useNewUrlParser: true,

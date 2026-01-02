@@ -2,7 +2,10 @@
   "dependencies": {
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.2",
+<<<<<<< HEAD
     "mongoosh": "^0.0.7",
+=======
+>>>>>>> 420924820a5569328c0cace91b80be005630dac2
     "y": "^0.3.2"
   },
   "name": "project-003",

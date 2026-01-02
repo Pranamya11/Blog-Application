@@ -16,10 +16,18 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "ejs": "^3.1.10",
+<<<<<<< HEAD
     "express": "^5.2.1",
     "hbs": "^4.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.16.5",
     "nodemon": "^3.1.11"
+=======
+    "express": "^5.1.0",
+    "hbs": "^4.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.5",
+    "nodemon": "^3.1.10"
+>>>>>>> 420924820a5569328c0cace91b80be005630dac2
   }
 }
